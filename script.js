@@ -146,23 +146,13 @@
     }, true);
   }
 
-  // 전용 드래그 손잡이: 이 손잡이는 touch-action:none 이라 브라우저가
-  // 스크롤로 가로채지 않고, 누르는 즉시 순서변경 드래그가 시작된다.
+  // 전용 드래그 손잡이: Pointer Capture가 브라우저마다 불안정할 수 있어
+  // 터치 기기는 Touch Events(항상 시작 요소에 이벤트가 고정됨)로 처리하고,
+  // 마우스(데스크톱 미리보기)는 별도 mouse 이벤트로 처리한다.
   function attachDragHandle(handle, row, sec){
     let dragging = false;
-    let pointerId = null;
 
-    handle.addEventListener('pointerdown', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      dragging = true;
-      pointerId = e.pointerId;
-      row.classList.add('dragging');
-      if (navigator.vibrate) navigator.vibrate(10);
-      try { handle.setPointerCapture(pointerId); } catch(err){}
-    });
-
-    handle.addEventListener('pointermove', (e) => {
+    function doMove(clientY){
       if (!dragging) return;
       const list = row.parentElement;
       const siblings = Array.from(list.children).filter(el => el !== row && el.classList.contains('todo-row'));
@@ -170,27 +160,58 @@
       for (const sib of siblings) {
         const rect = sib.getBoundingClientRect();
         const mid = rect.top + rect.height / 2;
-        if (e.clientY < mid) {
+        if (clientY < mid) {
           list.insertBefore(row, sib);
           inserted = true;
           break;
         }
       }
       if (!inserted) list.appendChild(row);
-    });
-
+    }
+    function start(){
+      dragging = true;
+      row.classList.add('dragging');
+      if (navigator.vibrate) navigator.vibrate(10);
+    }
     function finish(){
       if (!dragging) return;
       dragging = false;
       row.classList.remove('dragging');
-      if (pointerId !== null) {
-        try { handle.releasePointerCapture(pointerId); } catch(e){}
-      }
-      pointerId = null;
       reorderSection(sec);
     }
-    handle.addEventListener('pointerup', finish);
-    handle.addEventListener('pointercancel', finish);
+
+    // 터치 (모바일 실기기용, 가장 신뢰도 높은 경로)
+    handle.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      start();
+    }, { passive: false });
+    handle.addEventListener('touchmove', (e) => {
+      if (!dragging) return;
+      e.preventDefault();
+      doMove(e.touches[0].clientY);
+    }, { passive: false });
+    handle.addEventListener('touchend', finish);
+    handle.addEventListener('touchcancel', finish);
+
+    // 마우스 (데스크톱/미리보기용)
+    handle.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      start();
+      function onMove(ev){ doMove(ev.clientY); }
+      function onUp(){
+        finish();
+        window.removeEventListener('mousemove', onMove);
+        window.removeEventListener('mouseup', onUp);
+      }
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onUp);
+    });
+
+    // 손잡이를 눌렀을 때 부모 row의 롱프레스(삭제/이동 메뉴) 타이머가
+    // 같이 시작되지 않도록 pointerdown 버블링을 막는다.
+    handle.addEventListener('pointerdown', (e) => e.stopPropagation());
   }
 
   function reorderSection(sec){

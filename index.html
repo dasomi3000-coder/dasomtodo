@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>lazy todo</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="512x512" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<meta name="theme-color" content="#46577a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header class="top">
+    <div class="date" id="dateLabel">0000년 00월 00일 (0요일)</div>
+  </header>
+
+  <div id="sections">
+    <div class="row1">
+      <section class="section study" data-key="study">
+        <div class="sec-head"><span class="name">공부</span><span class="count" id="cnt-study"></span></div>
+        <div class="sec-list" id="list-study"></div>
+        <div class="add-wrap"><textarea class="add-input" id="add-study" placeholder="+ 할 일 추가" rows="1"></textarea></div>
+      </section>
+
+      <div class="sidebar">
+        <div class="todotime-card">
+          <div class="tt-label">⏱ ToDo Time</div>
+          <div class="tt-value" id="timeLeft">0분</div>
+        </div>
+        <button class="rating-btn" data-v="bad">bad</button>
+        <button class="rating-btn" data-v="normal">normal</button>
+        <button class="rating-btn" data-v="good">good</button>
+        <div class="sidebar-spacer"></div>
+      </div>
+    </div>
+
+    <div class="row2">
+      <section class="section prod" data-key="productivity">
+        <div class="sec-head"><span class="name">생산성</span><span class="count" id="cnt-productivity"></span></div>
+        <div class="sec-list" id="list-productivity"></div>
+        <div class="add-wrap"><textarea class="add-input" id="add-productivity" placeholder="+ 할 일 추가" rows="1"></textarea></div>
+      </section>
+      <section class="section chore" data-key="chores">
+        <div class="sec-head"><span class="name">잡일</span><span class="count" id="cnt-chores"></span></div>
+        <div class="sec-list" id="list-chores"></div>
+        <div class="add-wrap"><textarea class="add-input" id="add-chores" placeholder="+ 할 일 추가" rows="1"></textarea></div>
+      </section>
+    </div>
+  </div>
+
+  <footer class="bottom">
+    <button class="nav-btn" id="prevDay">‹</button>
+    <button class="nav-today" id="gotoToday">오늘로</button>
+    <button class="nav-btn" id="nextDay">›</button>
+  </footer>
+</div>
+
+<div class="modal-backdrop" id="timeModal">
+  <div class="modal-card">
+    <div class="modal-title">예상 소요시간</div>
+    <div class="modal-item" id="modalItemText"></div>
+    <div class="time-inputs">
+      <div class="time-field">
+        <label>시간</label>
+        <input type="number" id="modalHour" min="0" max="23" value="0" inputmode="numeric">
+      </div>
+      <div class="time-field">
+        <label>분</label>
+        <input type="number" id="modalMin" min="0" max="59" value="0" inputmode="numeric">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-skip" id="modalSkip">0분으로</button>
+      <button class="btn-ok" id="modalOk">확인</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="ctxModal">
+  <div class="modal-card">
+    <div class="modal-title">항목 관리</div>
+    <div class="modal-item" id="ctxItemText"></div>
+    <div class="ctx-menu">
+      <button class="ctx-btn ctx-delete" id="ctxDelete">삭제</button>
+      <button class="ctx-btn" id="ctxTomorrow">내일로 이동</button>
+      <button class="ctx-btn" id="ctxToday">오늘로 이동</button>
+      <button class="ctx-btn ctx-cancel" id="ctxCancel">취소</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "lazy TODO",
+  "short_name": "lazy TODO",
+  "description": "\ud558\ub8e8 \uc18c\uc694 \uc2dc\uac04\uc744 \uacc4\uc0b0\ud574 \uc8fc\ub294 \uc624\ud504\ub77c\uc778 \ud22c\ub450\ub9ac\uc2a4\ud2b8",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#edf1f5",
+  "theme_color": "#46577a",
+  "id": "lazyTODO",
+  "categories": ["productivity"],
+  "icons": [
+    { "src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

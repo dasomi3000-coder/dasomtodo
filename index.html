@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
+<html lang="ko"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<title>lazy todo</title>
+<title>lazy TODO</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="512x512" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
@@ -11,58 +10,45 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div id="app">
-  <div class="date" id="dateLabel">0000년 00월 00일 (0요일)</div>
-  <div class="main">
-    <section class="section study">
-      <div class="sec-head"><input class="name-input" id="name-study" maxlength="10" value="공부"><span class="count" id="cnt-study"></span></div>
-      <div class="sec-list" id="list-study"></div>
-      <div class="add-wrap"><textarea class="add-input" id="add-study" placeholder="+ 할 일 추가" rows="1"></textarea></div>
-    </section>
-    <div class="sidebar">
-      <div class="todotime-card"><div class="tt-label">⏱ ToDo Time</div><div class="tt-value" id="timeLeft">0분</div></div>
-      <div class="rating-row" id="ratingRow">
-        <button class="rating-btn" data-v="bad">bad</button>
-        <button class="rating-btn" data-v="normal">normal</button>
-        <button class="rating-btn" data-v="good">good</button>
-      </div>
-      <section class="section etc">
-        <div class="sec-head"><input class="name-input" id="name-etc" maxlength="10" value="기타"><span class="count" id="cnt-etc"></span></div>
-        <div class="sec-list" id="list-etc"></div>
-        <div class="add-wrap"><textarea class="add-input" id="add-etc" placeholder="+ 할 일 추가" rows="1"></textarea></div>
-      </section>
-    </div>
-  </div>
-  <footer class="bottom">
-    <button class="nav-btn" id="prevDay">‹</button>
-    <button class="nav-today" id="gotoToday">오늘로 가기</button>
-    <button class="nav-btn" id="nextDay">›</button>
-  </footer>
+<link rel="stylesheet" href="style.css"></head><body>
+<div id="stage">
+  <div class="slot date" data-slot="date" id="dateLabel"></div>
+  <button class="slot imgbtn" data-slot="settings" id="btnSettings" aria-label="설정"></button>
+  <div class="slot head" data-slot="studyHead"><input class="name-input" id="name-study" maxlength="10"><span class="count" id="cnt-study"></span></div>
+  <div class="slot list" data-slot="studyList" id="list-study"></div>
+  <div class="slot" data-slot="studyAdd"><textarea class="add-input" id="add-study" placeholder="+ 할 일 추가"></textarea></div>
+  <div class="slot tlabel" data-slot="timeLabel">⏱ ToDo Time</div>
+  <div class="slot tvalue" data-slot="timeValue" id="timeLeft">0분</div>
+  <button class="slot imgbtn rating-btn rb-bad" data-slot="rateBad" data-v="bad" aria-label="bad"></button>
+  <button class="slot imgbtn rating-btn rb-normal" data-slot="rateNormal" data-v="normal" aria-label="normal"></button>
+  <button class="slot imgbtn rating-btn rb-good" data-slot="rateGood" data-v="good" aria-label="good"></button>
+  <div class="slot head" data-slot="etcHead"><input class="name-input" id="name-etc" maxlength="10"><span class="count" id="cnt-etc"></span></div>
+  <div class="slot list" data-slot="etcList" id="list-etc"></div>
+  <div class="slot" data-slot="etcAdd"><textarea class="add-input" id="add-etc" placeholder="+ 할 일 추가"></textarea></div>
+  <button class="slot imgbtn" data-slot="prev" id="prevDay" aria-label="이전 날"></button>
+  <button class="slot imgbtn" data-slot="today" id="gotoToday">오늘로 가기</button>
+  <button class="slot imgbtn" data-slot="next" id="nextDay" aria-label="다음 날"></button>
+
+  <div class="backdrop" id="timeModal"><div class="popup">
+    <div class="slot ptext ptitle" data-slot="ptTitle">예상 소요시간</div>
+    <div class="slot ptext pitem" data-slot="ptItem" id="modalItemText"></div>
+    <div class="slot ptext" data-slot="ptHourLbl" style="text-align:center">시간</div>
+    <div class="slot ptext" data-slot="ptMinLbl" style="text-align:center">분</div>
+    <div class="slot" data-slot="ptHour"><input class="pin" id="modalHour" type="number" min="0" max="23" value="0" inputmode="numeric"></div>
+    <div class="slot" data-slot="ptMin"><input class="pin" id="modalMin" type="number" min="0" max="59" value="0" inputmode="numeric"></div>
+    <button class="slot imgbtn pbtn" data-slot="ptSkip" id="modalSkip">0분으로</button>
+    <button class="slot imgbtn pbtn" data-slot="ptOk" id="modalOk">확인</button>
+  </div></div>
+  <div class="backdrop" id="ctxModal"><div class="popup">
+    <div class="slot ptext ptitle" data-slot="pmTitle">항목 관리</div>
+    <div class="slot ptext pitem" data-slot="pmItem" id="ctxItemText"></div>
+    <button class="slot imgbtn pbtn" data-slot="pmDel" id="ctxDelete">삭제</button>
+    <button class="slot imgbtn pbtn" data-slot="pmTom" id="ctxTomorrow">내일로 이동</button>
+    <button class="slot imgbtn pbtn" data-slot="pmToday" id="ctxToday">오늘로 이동</button>
+    <button class="slot imgbtn pbtn" data-slot="pmCancel" id="ctxCancel">취소</button>
+  </div></div>
 </div>
-
-<div class="modal-backdrop" id="timeModal"><div class="modal-card">
-  <div class="modal-title">예상 소요시간</div>
-  <div class="modal-item" id="modalItemText"></div>
-  <div class="time-inputs">
-    <div class="time-field"><label>시간</label><input type="number" id="modalHour" min="0" max="23" value="0" inputmode="numeric"></div>
-    <div class="time-field"><label>분</label><input type="number" id="modalMin" min="0" max="59" value="0" inputmode="numeric"></div>
-  </div>
-  <div class="modal-actions"><button class="btn-skip" id="modalSkip">0분으로</button><button class="btn-ok" id="modalOk">확인</button></div>
-</div></div>
-
-<div class="modal-backdrop" id="ctxModal"><div class="modal-card">
-  <div class="modal-title">항목 관리</div>
-  <div class="modal-item" id="ctxItemText"></div>
-  <div class="ctx-menu">
-    <button class="ctx-btn ctx-delete" id="ctxDelete">삭제</button>
-    <button class="ctx-btn" id="ctxTomorrow">내일로 이동</button>
-    <button class="ctx-btn" id="ctxToday">오늘로 이동</button>
-    <button class="ctx-btn ctx-cancel" id="ctxCancel">취소</button>
-  </div>
-</div></div>
-<script src="script.js"></script>
-</body>
-</html>
+<div id="settings" hidden></div>
+<div id="preview" hidden></div>
+<input type="file" id="filePick" accept="image/*" hidden>
+<script src="script.js"></script></body></html>

@@ -15,85 +15,54 @@
 </head>
 <body>
 <div id="app">
-  <header class="top">
-    <div class="date" id="dateLabel">0000년 00월 00일 (0요일)</div>
-  </header>
-
-  <div id="sections">
-    <div class="row1">
-      <section class="section study" data-key="study">
-        <div class="sec-head"><span class="name">공부</span><span class="count" id="cnt-study"></span></div>
-        <div class="sec-list" id="list-study"></div>
-        <div class="add-wrap"><textarea class="add-input" id="add-study" placeholder="+ 할 일 추가" rows="1"></textarea></div>
-      </section>
-
-      <div class="sidebar">
-        <div class="todotime-card">
-          <div class="tt-label">⏱ ToDo Time</div>
-          <div class="tt-value" id="timeLeft">0분</div>
-        </div>
+  <div class="date" id="dateLabel">0000년 00월 00일 (0요일)</div>
+  <div class="main">
+    <section class="section study">
+      <div class="sec-head"><input class="name-input" id="name-study" maxlength="10" value="공부"><span class="count" id="cnt-study"></span></div>
+      <div class="sec-list" id="list-study"></div>
+      <div class="add-wrap"><textarea class="add-input" id="add-study" placeholder="+ 할 일 추가" rows="1"></textarea></div>
+    </section>
+    <div class="sidebar">
+      <div class="todotime-card"><div class="tt-label">⏱ ToDo Time</div><div class="tt-value" id="timeLeft">0분</div></div>
+      <div class="rating-row" id="ratingRow">
         <button class="rating-btn" data-v="bad">bad</button>
         <button class="rating-btn" data-v="normal">normal</button>
         <button class="rating-btn" data-v="good">good</button>
-        <div class="sidebar-spacer"></div>
       </div>
-    </div>
-
-    <div class="row2">
-      <section class="section prod" data-key="productivity">
-        <div class="sec-head"><span class="name">생산성</span><span class="count" id="cnt-productivity"></span></div>
-        <div class="sec-list" id="list-productivity"></div>
-        <div class="add-wrap"><textarea class="add-input" id="add-productivity" placeholder="+ 할 일 추가" rows="1"></textarea></div>
-      </section>
-      <section class="section chore" data-key="chores">
-        <div class="sec-head"><span class="name">잡일</span><span class="count" id="cnt-chores"></span></div>
-        <div class="sec-list" id="list-chores"></div>
-        <div class="add-wrap"><textarea class="add-input" id="add-chores" placeholder="+ 할 일 추가" rows="1"></textarea></div>
+      <section class="section etc">
+        <div class="sec-head"><input class="name-input" id="name-etc" maxlength="10" value="기타"><span class="count" id="cnt-etc"></span></div>
+        <div class="sec-list" id="list-etc"></div>
+        <div class="add-wrap"><textarea class="add-input" id="add-etc" placeholder="+ 할 일 추가" rows="1"></textarea></div>
       </section>
     </div>
   </div>
-
   <footer class="bottom">
     <button class="nav-btn" id="prevDay">‹</button>
-    <button class="nav-today" id="gotoToday">오늘로</button>
+    <button class="nav-today" id="gotoToday">오늘로 가기</button>
     <button class="nav-btn" id="nextDay">›</button>
   </footer>
 </div>
 
-<div class="modal-backdrop" id="timeModal">
-  <div class="modal-card">
-    <div class="modal-title">예상 소요시간</div>
-    <div class="modal-item" id="modalItemText"></div>
-    <div class="time-inputs">
-      <div class="time-field">
-        <label>시간</label>
-        <input type="number" id="modalHour" min="0" max="23" value="0" inputmode="numeric">
-      </div>
-      <div class="time-field">
-        <label>분</label>
-        <input type="number" id="modalMin" min="0" max="59" value="0" inputmode="numeric">
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-skip" id="modalSkip">0분으로</button>
-      <button class="btn-ok" id="modalOk">확인</button>
-    </div>
+<div class="modal-backdrop" id="timeModal"><div class="modal-card">
+  <div class="modal-title">예상 소요시간</div>
+  <div class="modal-item" id="modalItemText"></div>
+  <div class="time-inputs">
+    <div class="time-field"><label>시간</label><input type="number" id="modalHour" min="0" max="23" value="0" inputmode="numeric"></div>
+    <div class="time-field"><label>분</label><input type="number" id="modalMin" min="0" max="59" value="0" inputmode="numeric"></div>
   </div>
-</div>
+  <div class="modal-actions"><button class="btn-skip" id="modalSkip">0분으로</button><button class="btn-ok" id="modalOk">확인</button></div>
+</div></div>
 
-<div class="modal-backdrop" id="ctxModal">
-  <div class="modal-card">
-    <div class="modal-title">항목 관리</div>
-    <div class="modal-item" id="ctxItemText"></div>
-    <div class="ctx-menu">
-      <button class="ctx-btn ctx-delete" id="ctxDelete">삭제</button>
-      <button class="ctx-btn" id="ctxTomorrow">내일로 이동</button>
-      <button class="ctx-btn" id="ctxToday">오늘로 이동</button>
-      <button class="ctx-btn ctx-cancel" id="ctxCancel">취소</button>
-    </div>
+<div class="modal-backdrop" id="ctxModal"><div class="modal-card">
+  <div class="modal-title">항목 관리</div>
+  <div class="modal-item" id="ctxItemText"></div>
+  <div class="ctx-menu">
+    <button class="ctx-btn ctx-delete" id="ctxDelete">삭제</button>
+    <button class="ctx-btn" id="ctxTomorrow">내일로 이동</button>
+    <button class="ctx-btn" id="ctxToday">오늘로 이동</button>
+    <button class="ctx-btn ctx-cancel" id="ctxCancel">취소</button>
   </div>
-</div>
-
+</div></div>
 <script src="script.js"></script>
 </body>
 </html>

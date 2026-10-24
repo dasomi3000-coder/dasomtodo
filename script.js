@@ -2,10 +2,10 @@
 const $=id=>document.getElementById(id);
 // ===== 슬롯(고정 좌표, 무대 360x640 기준) =====
 const SLOTS={date:{x:16,y:20,w:200,h:26},settings:{x:316,y:18,w:28,h:28},
-studyHead:{x:14,y:58,w:196,h:34},studyList:{x:20,y:96,w:184,h:392},studyAdd:{x:20,y:492,w:184,h:34},
+studyHead:{x:14,y:58,w:196,h:34},studyList:{x:20,y:96,w:184,h:430},
 timeLabel:{x:222,y:66,w:124,h:18},timeValue:{x:222,y:86,w:124,h:40},
 rateBad:{x:226,y:140,w:30,h:30},rateNormal:{x:269,y:140,w:30,h:30},rateGood:{x:312,y:140,w:30,h:30},
-etcHead:{x:222,y:192,w:124,h:34},etcList:{x:226,y:230,w:116,h:258},etcAdd:{x:226,y:492,w:116,h:34},
+etcHead:{x:222,y:192,w:124,h:34},etcList:{x:226,y:230,w:116,h:296},
 prev:{x:14,y:560,w:44,h:44},today:{x:112,y:560,w:136,h:44},next:{x:302,y:560,w:44,h:44},
 ptTitle:{x:20,y:16,w:260,h:18},ptItem:{x:20,y:40,w:260,h:40},ptHourLbl:{x:40,y:82,w:100,h:16},ptMinLbl:{x:160,y:82,w:100,h:16},
 ptHour:{x:40,y:100,w:100,h:44},ptMin:{x:160,y:100,w:100,h:44},ptSkip:{x:20,y:166,w:120,h:44},ptOk:{x:160,y:166,w:120,h:44},
@@ -52,9 +52,9 @@ function applyTheme(){
 function saveColors(){try{localStorage.setItem(THEME_KEY,JSON.stringify(colors))}catch(e){}}
 function toBlobFromFile(file,W,H){return new Promise((res,rej)=>{const img=new Image(),u=URL.createObjectURL(file);
   img.onload=()=>{URL.revokeObjectURL(u);const ar=img.width/img.height,tr=W/H;
-    if(Math.abs(ar-tr)/tr>0.05)return rej(`비율이 안 맞아요. 올린 이미지 ${img.width}×${img.height} / 권장 ${W}×${H}px (가로:세로 비율이 같아야 해요)`);
-    const c=document.createElement('canvas');c.width=W;c.height=H;c.getContext('2d').drawImage(img,0,0,W,H);c.toBlob(b=>b?res(b):rej('이미지를 처리하지 못했어요'),'image/png');};
-  img.onerror=()=>rej('이미지를 읽을 수 없어요');img.src=u;});}
+    if(Math.abs(ar-tr)/tr>0.05)return rej(`비율 불일치: 올린 이미지 ${img.width}×${img.height} / 권장 ${W}×${H}px (가로:세로 비율 동일해야 함)`);
+    const c=document.createElement('canvas');c.width=W;c.height=H;c.getContext('2d').drawImage(img,0,0,W,H);c.toBlob(b=>b?res(b):rej('이미지 처리 실패'),'image/png');};
+  img.onerror=()=>rej('이미지를 읽을 수 없음');img.src=u;});}
 
 // ===== 설정 화면 =====
 let pickKey=null;
@@ -62,21 +62,22 @@ const setMsg=t=>{const m=$('sMsg');if(m)m.textContent=t||'';};
 function buildSettings(){
   const el=$('settings');
   el.innerHTML=`<div class="sh"><b>디자인 설정</b><button id="sClose">닫기</button></div><div id="sMsg"></div>
-  <h3>이미지 (원하는 것만 바꿔도 돼요)</h3><div style="font-size:11.5px;color:#6b7480;margin:-4px 0 8px">그림을 누르면 크게 보고, 앱에서 들어가는 자리를 예시로 볼 수 있어요.</div><div id="sImgs"></div><h3>글자 색</h3><div id="sCols"></div>
+  <h3>이미지 (원하는 항목만 교체)</h3><div style="font-size:11.5px;color:#6b7480;margin:-4px 0 8px">그림 터치: 크게 보기 + 사용 위치 예시</div><div id="sImgs"></div><h3>글자 색</h3><div id="sCols"></div>
   <h3>기타</h3><div class="row"><button id="sReset">전체 초기화</button></div>
-  <div style="font-size:11.5px;color:#6b7480;line-height:1.5">버튼 그림에는 글자를 넣지 말고 모양만 그려주세요. (글자는 위에 따로 올라가요. 화살표·설정 버튼은 그림 안에 기호를 직접 그려요.)</div>`;
+  <div style="font-size:11.5px;color:#6b7480;line-height:1.5">평가 버튼·화살표·설정 버튼·오늘로 가기는 글자/기호를 그림 안에 직접 그리기. 팝업 버튼은 글자가 위에 따로 올라감.</div>`;
   $('sImgs').innerHTML=SPECS.map(([k,label,w,h,def])=>`<div class="row"><img class="thumb" data-pv="${k}" src="${custom[k]||def()}"><div class="info">${label}${custom[k]?'<span class="badge">내 이미지</span>':''}<small>권장 ${w*3}×${h*3}px</small></div><button data-up="${k}">올리기</button><button data-rs="${k}">기본값</button></div>`).join('');
-  $('sCols').innerHTML=COLORS.map(([k,label,d])=>`<div class="row"><div class="info">${label}</div><input type="color" data-col="${k}" value="${colors[k]||d}"><button data-cr="${k}">초기화</button></div>`).join('');
+  $('sCols').innerHTML=COLORS.map(([k,label,d])=>`<div class="row"><div class="info">${label}</div><input type="color" data-col="${k}" value="${colors[k]||d}"><button data-eye="${k}">스포이드</button><button data-cr="${k}">초기화</button></div>`).join('');
 }
 $('settings').addEventListener('click',async e=>{
   const t=e.target;
   if(t.id==='sClose'){$('settings').hidden=true;return;}
   if(t.dataset.pv){openPreview(t.dataset.pv);return;}
-  if(t.id==='sReset'){if(!confirm('디자인 설정을 모두 기본값으로 되돌릴까요? (할 일 기록은 지워지지 않아요)'))return;
+  if(t.id==='sReset'){if(!confirm('디자인 설정을 전부 기본값으로 되돌림. 할 일 기록은 유지. 진행?'))return;
     for(const k of Object.keys(custom)){URL.revokeObjectURL(custom[k]);await idb('readwrite',s=>s.delete(k));delete custom[k];}
     colors={};saveColors();applyTheme();buildSettings();return;}
   if(t.dataset.up){pickKey=t.dataset.up;$('filePick').value='';$('filePick').click();return;}
   if(t.dataset.rs){const k=t.dataset.rs;if(custom[k]){URL.revokeObjectURL(custom[k]);delete custom[k];await idb('readwrite',s=>s.delete(k));}applyTheme();buildSettings();return;}
+  if(t.dataset.eye){openEye(t.dataset.eye);return;}
   if(t.dataset.cr){delete colors[t.dataset.cr];saveColors();applyTheme();buildSettings();}
 });
 $('settings').addEventListener('input',e=>{const k=e.target.dataset.col;if(k){colors[k]=e.target.value;saveColors();applyTheme();}});
@@ -85,7 +86,7 @@ $('filePick').addEventListener('change',async e=>{
   try{const blob=await toBlobFromFile(f,sp[2]*3,sp[3]*3);
     if(custom[pickKey])URL.revokeObjectURL(custom[pickKey]);custom[pickKey]=URL.createObjectURL(blob);
     const ok=await idb('readwrite',s=>s.put({key:pickKey,blob}));
-    applyTheme();buildSettings();setMsg(ok?'적용됐어요 ✓':'적용은 됐지만 저장은 못 했어요. 이 환경에서는 앱을 닫으면 사라질 수 있어요.');
+    applyTheme();buildSettings();setMsg(ok?'적용됨 ✓':'적용됨 (저장 실패: 닫으면 초기화될 수 있음)');
   }catch(err){setMsg(String(err));}
 });
 $('btnSettings').addEventListener('click',()=>{buildSettings();$('settings').hidden=false;});
@@ -102,12 +103,51 @@ function locSvg(key){
   s+=`<rect x="${x-2}" y="${y-2}" width="${w+4}" height="${h+4}" rx="6" fill="${key==='scene'||pop?'none':'rgba(229,57,53,.15)'}" stroke="#e53935" stroke-width="2.5" stroke-dasharray="6 4"/>`;
   return `<svg viewBox="0 0 360 640" width="190" style="border:1px solid #d5dae0;border-radius:8px;background:#fff">${s}</svg>`;
 }
+let pvUrl=null,pvBlob=null,pvKey='';
+function toPng(url,W,H){return new Promise(res=>{const i=new Image();i.onload=()=>{const c=document.createElement('canvas');c.width=W;c.height=H;c.getContext('2d').drawImage(i,0,0,W,H);c.toBlob(b=>res(b),'image/png');};i.onerror=()=>res(null);i.src=url;});}
 function openPreview(k){
-  const sp=spec(k),url=custom[k]||sp[4](),sc=Math.min(300/Math.max(sp[2],sp[3]),8);
-  $('preview').innerHTML=`<div class="pv-card"><div class="sh"><b>${sp[1]}</b><button id="pvClose">닫기</button></div><div class="pv-sub">권장 ${sp[2]*3}×${sp[3]*3}px · ${custom[k]?'지금은 내 이미지':'지금은 기본 이미지'}</div><div class="pv-big"><img src="${url}" style="width:${sp[2]*sc}px;height:${sp[3]*sc}px"></div><div class="pv-sub">앱에서 이 그림이 들어가는 자리 (예시, 빨간 점선)</div><div class="pv-loc">${locSvg(k)}</div></div>`;
+  const sp=spec(k),url=custom[k]||sp[4](),sc=Math.min(300/Math.max(sp[2],sp[3]),8),W=sp[2]*3,H=sp[3]*3;
+  pvBlob=null;pvKey=k;if(pvUrl){URL.revokeObjectURL(pvUrl);pvUrl=null;}
+  $('preview').innerHTML=`<div class="pv-card"><div class="sh"><b>${sp[1]}</b><button id="pvClose">닫기</button></div><div class="pv-sub">권장 ${W}×${H}px · 현재: ${custom[k]?'내 이미지':'기본 이미지'}</div><div class="pv-big"><img id="pvImg" src="${url}" style="width:${sp[2]*sc}px;height:${sp[3]*sc}px"></div><button id="pvDown" class="pv-btn">PNG로 저장 (${W}×${H}px)</button><div class="pv-sub" style="margin-top:6px">저장 버튼이 안 먹히면 그림을 길게 눌러 저장</div><div class="pv-sub">사용 위치 예시 (빨간 점선)</div><div class="pv-loc">${locSvg(k)}</div></div>`;
   $('preview').hidden=false;
+  toPng(url,W,H).then(b=>{if(!b||pvKey!==k)return;pvBlob=b;pvUrl=URL.createObjectURL(b);const im=$('pvImg');if(im)im.src=pvUrl;});
 }
-$('preview').addEventListener('click',e=>{if(e.target.id==='pvClose'||e.target.id==='preview')$('preview').hidden=true;});
+$('preview').addEventListener('click',e=>{const id=e.target.id;if(id==='pvClose'||id==='preview')$('preview').hidden=true;if(id==='pvDown'&&pvBlob){const a=document.createElement('a');a.href=pvUrl;a.download='lazytodo-'+pvKey+'.png';document.body.appendChild(a);a.click();a.remove();}});
+// ===== 스포이드 (테마 이미지에서 색 추출) =====
+let eyeKey='',eyeHex='';
+function eyeLoad(ik){
+  const sp=spec(ik),url=custom[ik]||sp[4](),cv=$('eyeCv'),ctx=cv.getContext('2d',{willReadFrequently:true}),sc=300/Math.max(sp[2],sp[3]);
+  cv.width=Math.round(sp[2]*sc);cv.height=Math.round(sp[3]*sc);
+  const i=new Image();i.onload=()=>{ctx.clearRect(0,0,cv.width,cv.height);ctx.drawImage(i,0,0,cv.width,cv.height);};i.src=url;
+  document.querySelectorAll('.eye-chip').forEach(c=>c.classList.toggle('on',c.dataset.ek===ik));
+  eyeHex='';$('eyHex').textContent='이미지를 터치해서 색 추출';$('eySw').style.background='#fff';$('eyeRing').style.display='none';
+}
+function eyeSample(e){
+  const cv=$('eyeCv'),r=cv.getBoundingClientRect();
+  const x=Math.min(cv.width-1,Math.max(0,Math.floor((e.clientX-r.left)*cv.width/r.width))),y=Math.min(cv.height-1,Math.max(0,Math.floor((e.clientY-r.top)*cv.height/r.height)));
+  const d=cv.getContext('2d').getImageData(x,y,1,1).data;
+  if(d[3]<20){eyeHex='';$('eyHex').textContent='투명 영역. 다른 곳 터치';return;}
+  eyeHex='#'+[d[0],d[1],d[2]].map(v=>v.toString(16).padStart(2,'0')).join('');
+  $('eyHex').textContent=eyeHex;$('eySw').style.background=eyeHex;
+  const st=cv.parentElement.getBoundingClientRect(),ring=$('eyeRing');ring.style.display='block';ring.style.left=(e.clientX-st.left)+'px';ring.style.top=(e.clientY-st.top)+'px';
+}
+function openEye(k){
+  eyeKey=k;const lab=COLORS.find(c=>c[0]===k)[1];
+  const chips=SPECS.map(([ik,l,,,def])=>`<button class="eye-chip${custom[ik]?' mine':''}" data-ek="${ik}" title="${l}"><img src="${custom[ik]||def()}"></button>`).join('');
+  $('eye').innerHTML=`<div class="pv-card"><div class="sh"><b>스포이드 · ${lab}</b><button id="eyeClose">닫기</button></div><div class="pv-sub">이미지 선택 후 원하는 위치 터치. 초록 테두리 = 내 이미지</div><div class="eye-chips">${chips}</div><div class="eye-stage"><canvas id="eyeCv"></canvas><div id="eyeRing"></div></div><div class="eye-pick"><span id="eySw"></span><span id="eyHex"></span><button id="eyeApply">적용</button></div></div>`;
+  $('eye').hidden=false;
+  const first=SPECS.find(s=>custom[s[0]]);eyeLoad(first?first[0]:'scene');
+  const cv=$('eyeCv');let down=false;
+  cv.addEventListener('pointerdown',e=>{down=true;eyeSample(e);});
+  cv.addEventListener('pointermove',e=>{if(down)eyeSample(e);});
+  ['pointerup','pointercancel'].forEach(n=>cv.addEventListener(n,()=>{down=false;}));
+}
+$('eye').addEventListener('click',e=>{
+  const id=e.target.id,b=e.target.closest('button');
+  if(id==='eye'||id==='eyeClose'){$('eye').hidden=true;return;}
+  if(b&&b.dataset.ek){eyeLoad(b.dataset.ek);return;}
+  if(id==='eyeApply'&&eyeHex){colors[eyeKey]=eyeHex;saveColors();applyTheme();buildSettings();$('eye').hidden=true;}
+});
 
 // ===== 할 일 데이터/로직 =====
 const STORE_KEY='lazytodo_data_v1',NAMES_KEY='lazytodo_names_v1',WD=['일','월','화','수','목','금','토'],SECTIONS=['study','etc'],DN={study:'공부',etc:'기타'};
@@ -128,7 +168,7 @@ function render(){
   SECTIONS.forEach(sec=>{const list=$('list-'+sec);list.innerHTML='';const items=day[sec];
     const ord=items.filter(i=>!i.done).concat(items.filter(i=>i.done));
     $('cnt-'+sec).textContent=items.length?`${items.filter(i=>i.done).length}/${items.length}`:'';
-    ord.forEach(it=>{if(!it.done)remain+=(it.minutes||0);list.appendChild(buildRow(sec,it));});
+    const op=ord.filter(i=>!i.done),dn=ord.filter(i=>i.done);op.forEach(it=>{remain+=(it.minutes||0);list.appendChild(buildRow(sec,it));});list.appendChild(buildAddRow(sec));dn.forEach(it=>list.appendChild(buildRow(sec,it)));
     const inp=$('name-'+sec);if(document.activeElement!==inp)inp.value=names[sec];});
   $('timeLeft').textContent=fmt(remain);
   document.querySelectorAll('.rating-btn').forEach(b=>b.classList.toggle('sel',day.rating===b.dataset.v));
@@ -144,6 +184,17 @@ function buildRow(sec,item){
   const h=document.createElement('div');h.className='drag-handle';
   h.innerHTML='<svg viewBox="0 0 20 20" fill="currentColor"><circle cx="6" cy="4" r="1.6"/><circle cx="14" cy="4" r="1.6"/><circle cx="6" cy="10" r="1.6"/><circle cx="14" cy="10" r="1.6"/><circle cx="6" cy="16" r="1.6"/><circle cx="14" cy="16" r="1.6"/></svg>';
   row.append(cb,main,h);attachLong(row,sec,item);attachDrag(h,row,sec);return row;
+}
+function buildAddRow(sec){
+  const row=document.createElement('div');row.className='add-row';
+  const cb=document.createElement('div');cb.className='checkbox';
+  const box=document.createElement('textarea');box.className='add-input';box.id='add-'+sec;box.rows=1;box.placeholder='할 일 추가';
+  row.append(cb,box);
+  const lines=()=>{const l=box.value.split('\n').map(s=>s.trim()).filter(Boolean);box.value='';box.style.height='';return l;};
+  box.addEventListener('blur',()=>{const l=lines();if(l.length)queueAdds(sec,l);});
+  box.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();const l=lines();if(l.length)queueAdds(sec,l,()=>{const b=$('add-'+sec);if(b){b.focus();b.scrollIntoView({block:'nearest'});}});}});
+  box.addEventListener('input',()=>{box.style.height='auto';box.style.height=Math.min(box.scrollHeight,66)+'px';});
+  return row;
 }
 function startEdit(item,el){const i=document.createElement('textarea');i.className='todo-edit-input';i.value=item.text;i.rows=1;el.replaceWith(i);i.focus();i.setSelectionRange(i.value.length,i.value.length);
   i.addEventListener('blur',()=>{const v=i.value.trim();if(v)item.text=v;saveStore();render();});i.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();i.blur();}});}
@@ -162,11 +213,7 @@ function attachDrag(handle,row,sec){let on=false;
   handle.addEventListener('mousedown',e=>{e.preventDefault();e.stopPropagation();start();const mv=ev=>move(ev.clientY),up=()=>{fin();removeEventListener('mousemove',mv);removeEventListener('mouseup',up);};addEventListener('mousemove',mv);addEventListener('mouseup',up);});
   handle.addEventListener('pointerdown',e=>e.stopPropagation());}
 function reorder(sec){const ids=Array.from($('list-'+sec).querySelectorAll('.todo-row')).map(r=>r.dataset.id),day=getDay(current),by={};day[sec].forEach(i=>by[i.id]=i);day[sec]=ids.map(id=>by[id]).filter(Boolean);saveStore();}
-SECTIONS.forEach(sec=>{const box=$('add-'+sec);
-  const lines=()=>{const l=box.value.split('\n').map(s=>s.trim()).filter(Boolean);box.value='';return l;};
-  box.addEventListener('blur',()=>{const l=lines();if(l.length)queueAdds(sec,l);});
-  box.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();const l=lines();if(l.length)queueAdds(sec,l,()=>box.focus());}});
-  const inp=$('name-'+sec);inp.addEventListener('focus',()=>inp.select());inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur();});
+SECTIONS.forEach(sec=>{const inp=$('name-'+sec);inp.addEventListener('focus',()=>inp.select());inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur();});
   inp.addEventListener('blur',()=>{const v=inp.value.trim()||DN[sec];names[sec]=v;inp.value=v;save(NAMES_KEY,names);});});
 function queueAdds(sec,lines,done){let i=0;(function next(){if(i>=lines.length){if(done)done();return;}const text=lines[i];
   openTime(text,0,m=>{getDay(current)[sec].push({id:uid(),text,minutes:m,done:false});saveStore();render();i++;next();});})();}

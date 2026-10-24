@@ -16,7 +16,6 @@
   <button class="slot imgbtn" data-slot="settings" id="btnSettings" aria-label="설정"></button>
   <div class="slot head" data-slot="studyHead"><input class="name-input" id="name-study" maxlength="10"><span class="count" id="cnt-study"></span></div>
   <div class="slot list" data-slot="studyList" id="list-study"></div>
-  <div class="slot" data-slot="studyAdd"><textarea class="add-input" id="add-study" placeholder="+ 할 일 추가"></textarea></div>
   <div class="slot tlabel" data-slot="timeLabel">⏱ ToDo Time</div>
   <div class="slot tvalue" data-slot="timeValue" id="timeLeft">0분</div>
   <button class="slot imgbtn rating-btn rb-bad" data-slot="rateBad" data-v="bad" aria-label="bad"></button>
@@ -24,9 +23,8 @@
   <button class="slot imgbtn rating-btn rb-good" data-slot="rateGood" data-v="good" aria-label="good"></button>
   <div class="slot head" data-slot="etcHead"><input class="name-input" id="name-etc" maxlength="10"><span class="count" id="cnt-etc"></span></div>
   <div class="slot list" data-slot="etcList" id="list-etc"></div>
-  <div class="slot" data-slot="etcAdd"><textarea class="add-input" id="add-etc" placeholder="+ 할 일 추가"></textarea></div>
   <button class="slot imgbtn" data-slot="prev" id="prevDay" aria-label="이전 날"></button>
-  <button class="slot imgbtn" data-slot="today" id="gotoToday">오늘로 가기</button>
+  <button class="slot imgbtn" data-slot="today" id="gotoToday" aria-label="오늘로 가기"></button>
   <button class="slot imgbtn" data-slot="next" id="nextDay" aria-label="다음 날"></button>
 
   <div class="backdrop" id="timeModal"><div class="popup">
@@ -50,5 +48,6 @@
 </div>
 <div id="settings" hidden></div>
 <div id="preview" hidden></div>
+<div id="eye" hidden></div>
 <input type="file" id="filePick" accept="image/*" hidden>
 <script src="script.js"></script></body></html>
